@@ -10,36 +10,39 @@
  */
 function event_registration_mail($key, &$message, $params) {
   $site_name = \Drupal::config('system.site')->get('name');
+  $body = [];
 
   switch ($key) {
     case 'registration_confirmation':
-      $message['subject'] = t('Event Registration Confirmation - @site', ['@site' => $site_name]);
-      $message['body'][] = t('Dear @name,', ['@name' => $params['name']]);
-      $message['body'][] = '';
-      $message['body'][] = t('Thank you for registering for our event.');
-      $message['body'][] = '';
-      $message['body'][] = t('Event Details:');
-      $message['body'][] = t('Event Name: @event_name', ['@event_name' => $params['event_name']]);
-      $message['body'][] = t('Event Date: @event_date', ['@event_date' => date('Y-m-d', $params['event_date'])]);
-      $message['body'][] = t('Category: @category', ['@category' => $params['category']]);
-      $message['body'][] = '';
-      $message['body'][] = t('We look forward to seeing you!');
-      $message['body'][] = '';
-      $message['body'][] = t('Best regards,');
-      $message['body'][] = t('@site Team', ['@site' => $site_name]);
+      $message['subject'] = 'Event Registration Confirmation - ' . $site_name;
+      $body[] = 'Dear ' . $params['name'] . ',';
+      $body[] = '';
+      $body[] = 'Thank you for registering for our event.';
+      $body[] = '';
+      $body[] = 'Event Details:';
+      $body[] = 'Event Name: ' . $params['event_name'];
+      $body[] = 'Event Date: ' . date('Y-m-d', $params['event_date']);
+      $body[] = 'Category: ' . $params['category'];
+      $body[] = '';
+      $body[] = 'We look forward to seeing you!';
+      $body[] = '';
+      $body[] = 'Best regards,';
+      $body[] = $site_name . ' Team';
       break;
 
     case 'admin_notification':
       $message['subject'] = $params['subject'];
-      $message['body'][] = t('New event registration received:');
-      $message['body'][] = '';
-      $message['body'][] = t('User Name: @name', ['@name' => $params['user_name']]);
-      $message['body'][] = t('User Email: @email', ['@email' => $params['user_email']]);
-      $message['body'][] = t('Event Name: @event_name', ['@event_name' => $params['event_name']]);
-      $message['body'][] = t('Event Date: @event_date', ['@event_date' => date('Y-m-d', $params['event_date'])]);
-      $message['body'][] = t('Category: @category', ['@category' => $params['category']]);
-      $message['body'][] = '';
-      $message['body'][] = t('Registration submitted at: @timestamp', ['@timestamp' => date('Y-m-d H:i:s', time())]);
+      $body[] = 'New event registration received:';
+      $body[] = '';
+      $body[] = 'User Name: ' . $params['user_name'];
+      $body[] = 'User Email: ' . $params['user_email'];
+      $body[] = 'Event Name: ' . $params['event_name'];
+      $body[] = 'Event Date: ' . date('Y-m-d', $params['event_date']);
+      $body[] = 'Category: ' . $params['category'];
+      $body[] = '';
+      $body[] = 'Registration submitted at: ' . date('Y-m-d H:i:s', time());
       break;
   }
+
+  $message['body'] = $body;
 }
