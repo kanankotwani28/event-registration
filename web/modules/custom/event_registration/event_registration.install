@@ -117,5 +117,7 @@ function event_registration_schema() {
       'email' => ['email'],
       'created' => ['created'],
     ],
+  ];
+
   return $schema;
 }
