@@ -18,3 +18,5 @@ services:
 
   event_registration.validation_service:
     class: Drupal\event_registration\Service\ValidationService
+    arguments:
+      - "@database"
