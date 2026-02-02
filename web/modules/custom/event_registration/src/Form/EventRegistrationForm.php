@@ -210,7 +210,8 @@ class EventRegistrationForm extends FormBase {
     }
 
     // Check for duplicate registration
-    if ($this->validationService->isDuplicateRegistration($email, $form_state->getValue('event_date'))) {
+    $event_name_id = $form_state->getValue('event_name');
+    if ($event_name_id && $this->validationService->isDuplicateRegistration($email, $event_name_id)) {
       $form_state->setErrorByName('email', $this->t('You have already registered for this event.'));
     }
 

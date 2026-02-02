@@ -38,23 +38,12 @@ class ValidationService {
   }
 
   /**
-   * Check for duplicate registration (email + event date).
+   * Check for duplicate registration (email + event).
    */
-  public function isDuplicateRegistration($email, $event_date) {
-    // Get the event_id for this event_date
-    $event = $this->database->select('event_config', 'ec')
-      ->fields('ec', ['id'])
-      ->condition('event_date', $event_date)
-      ->execute()
-      ->fetchAssoc();
-
-    if (!$event) {
-      return FALSE;
-    }
-
+  public function isDuplicateRegistration($email, $event_id) {
     $count = $this->database->select('event_registration', 'er')
       ->condition('email', $email)
-      ->condition('event_id', $event['id'])
+      ->condition('event_id', $event_id)
       ->countQuery()
       ->execute()
       ->fetchField();
