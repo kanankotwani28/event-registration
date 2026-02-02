@@ -151,13 +151,20 @@ class EventRegistrationForm extends FormBase {
 
     $event_date = $form_state->getValue('event_date');
 
+    // Get event names based on selected category and date
+    $event_name_options = [];
+    if ($category && $event_date) {
+      $event_name_options = $this->eventService->getEventNamesByDateAndCategory($event_date, $category);
+    }
+
     $form['event_name'] = [
       '#type' => 'select',
       '#title' => $this->t('Event Name'),
-      '#options' => ($category && $event_date) ? $this->eventService->getEventNamesByDateAndCategory($event_date, $category) : [],
+      '#options' => ['' => $this->t('-- Select Event Name --')] + $event_name_options,
       '#required' => TRUE,
       '#prefix' => '<div id="event-names-wrapper">',
       '#suffix' => '</div>',
+      '#description' => $this->t('Select a category and date first to see available events.'),
     ];
 
     $form['submit'] = [
@@ -172,8 +179,9 @@ class EventRegistrationForm extends FormBase {
    * AJAX callback to update event dates.
    */
   public function ajaxUpdateEventDates(array &$form, FormStateInterface $form_state) {
-    $form['event_date']['#options'] = $this->eventService->getEventDatesByCategory($form_state->getValue('category'));
-    $form['event_name']['#options'] = [];
+    $categories = $this->eventService->getEventDatesByCategory($form_state->getValue('category'));
+    $form['event_date']['#options'] = ['' => $this->t('-- Select Event Date --')] + $categories;
+    $form['event_name']['#options'] = ['' => $this->t('-- Select Event Name --')];
     return $form['event_date'];
   }
 
@@ -184,12 +192,12 @@ class EventRegistrationForm extends FormBase {
     $category = $form_state->getValue('category');
     $event_date = $form_state->getValue('event_date');
 
+    $event_names = [];
     if ($category && $event_date) {
-      $form['event_name']['#options'] = $this->eventService->getEventNamesByDateAndCategory($event_date, $category);
-    } else {
-      $form['event_name']['#options'] = [];
+      $event_names = $this->eventService->getEventNamesByDateAndCategory($event_date, $category);
     }
 
+    $form['event_name']['#options'] = ['' => $this->t('-- Select Event Name --')] + $event_names;
     return $form['event_name'];
   }
 
