@@ -128,4 +128,19 @@ class EventService {
       ->fetchAssoc();
   }
 
+  /**
+   * Format timestamp to readable date string.
+   *
+   * @param int $timestamp
+   *   Unix timestamp.
+   * @param string $format
+   *   PHP date format (default: Y-m-d H:i).
+   *
+   * @return string
+   *   Formatted date string.
+   */
+  public function formatTimestamp($timestamp, $format = 'Y-m-d H:i') {
+    return date($format, (int) $timestamp);
+  }
+
 }

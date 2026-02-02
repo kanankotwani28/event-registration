@@ -98,9 +98,15 @@ class EventConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $event_date = strtotime($form_state->getValue('event_date'));
-    $reg_start = strtotime($form_state->getValue('reg_start'));
-    $reg_end = strtotime($form_state->getValue('reg_end'));
+    // Convert datetime form values to timestamps
+    $event_date_value = $form_state->getValue('event_date');
+    $reg_start_value = $form_state->getValue('reg_start');
+    $reg_end_value = $form_state->getValue('reg_end');
+
+    // Convert DrupalDateTime objects to timestamps
+    $event_date = $event_date_value instanceof \DateTime ? $event_date_value->getTimestamp() : strtotime($event_date_value);
+    $reg_start = $reg_start_value instanceof \DateTime ? $reg_start_value->getTimestamp() : strtotime($reg_start_value);
+    $reg_end = $reg_end_value instanceof \DateTime ? $reg_end_value->getTimestamp() : strtotime($reg_end_value);
 
     if ($reg_start >= $reg_end) {
       $form_state->setErrorByName('reg_end', $this->t('Registration end date must be after registration start date.'));
@@ -124,22 +130,44 @@ class EventConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $event_date = \DateTime::createFromFormat('Y-m-d H:i', $form_state->getValue('event_date'));
-    $reg_start = \DateTime::createFromFormat('Y-m-d H:i', $form_state->getValue('reg_start'));
-    $reg_end = \DateTime::createFromFormat('Y-m-d H:i', $form_state->getValue('reg_end'));
+    // Get form values as DateTime objects or strings
+    $event_date_value = $form_state->getValue('event_date');
+    $reg_start_value = $form_state->getValue('reg_start');
+    $reg_end_value = $form_state->getValue('reg_end');
+
+    // Convert to timestamps - handle both DateTime objects and strings
+    $event_date_timestamp = $this->dateToTimestamp($event_date_value);
+    $reg_start_timestamp = $this->dateToTimestamp($reg_start_value);
+    $reg_end_timestamp = $this->dateToTimestamp($reg_end_value);
 
     $this->database->insert('event_config')
       ->fields([
         'event_name' => $form_state->getValue('event_name'),
         'category' => $form_state->getValue('category'),
-        'event_date' => $event_date ? $event_date->getTimestamp() : time(),
-        'reg_start' => $reg_start ? $reg_start->getTimestamp() : time(),
-        'reg_end' => $reg_end ? $reg_end->getTimestamp() : time(),
+        'event_date' => $event_date_timestamp,
+        'reg_start' => $reg_start_timestamp,
+        'reg_end' => $reg_end_timestamp,
         'created' => time(),
       ])
       ->execute();
 
     $this->messenger()->addStatus($this->t('Event configuration saved successfully!'));
+  }
+
+  /**
+   * Helper method to convert DateTime or string to timestamp.
+   */
+  private function dateToTimestamp($date_value) {
+    if ($date_value instanceof \DateTime) {
+      return $date_value->getTimestamp();
+    }
+    if (is_numeric($date_value)) {
+      return (int) $date_value;
+    }
+    if (is_string($date_value)) {
+      return strtotime($date_value);
+    }
+    return time();
   }
 
 }
