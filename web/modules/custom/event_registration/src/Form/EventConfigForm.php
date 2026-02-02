@@ -98,28 +98,31 @@ class EventConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    // Convert datetime form values to timestamps
+    // Get form values from the datetime elements
+    // Drupal datetime form element returns DrupalDateTime objects
     $event_date_value = $form_state->getValue('event_date');
     $reg_start_value = $form_state->getValue('reg_start');
     $reg_end_value = $form_state->getValue('reg_end');
 
-    // Convert DrupalDateTime objects to timestamps
-    $event_date = $event_date_value instanceof \DateTime ? $event_date_value->getTimestamp() : strtotime($event_date_value);
-    $reg_start = $reg_start_value instanceof \DateTime ? $reg_start_value->getTimestamp() : strtotime($reg_start_value);
-    $reg_end = $reg_end_value instanceof \DateTime ? $reg_end_value->getTimestamp() : strtotime($reg_end_value);
+    // Convert all to Unix timestamps for reliable comparison
+    $event_date_timestamp = $this->dateToTimestamp($event_date_value);
+    $reg_start_timestamp = $this->dateToTimestamp($reg_start_value);
+    $reg_end_timestamp = $this->dateToTimestamp($reg_end_value);
 
-    if ($reg_start >= $reg_end) {
+    // Validate date sequence: reg_start < reg_end < event_date
+    if ($reg_start_timestamp >= $reg_end_timestamp) {
       $form_state->setErrorByName('reg_end', $this->t('Registration end date must be after registration start date.'));
     }
 
-    if ($reg_start >= $event_date) {
+    if ($reg_start_timestamp >= $event_date_timestamp) {
       $form_state->setErrorByName('event_date', $this->t('Event date must be after registration start date.'));
     }
 
-    if ($reg_end >= $event_date) {
+    if ($reg_end_timestamp >= $event_date_timestamp) {
       $form_state->setErrorByName('event_date', $this->t('Event date must be after registration end date.'));
     }
 
+    // Validate event name format
     $event_name = $form_state->getValue('event_name');
     if (!preg_match('/^[a-zA-Z0-9\s\-&(),.\']+$/u', $event_name)) {
       $form_state->setErrorByName('event_name', $this->t('Event name contains invalid characters.'));
@@ -130,24 +133,26 @@ class EventConfigForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Get form values as DateTime objects or strings
+    // Get form values - Drupal datetime form element returns DrupalDateTime objects
     $event_date_value = $form_state->getValue('event_date');
     $reg_start_value = $form_state->getValue('reg_start');
     $reg_end_value = $form_state->getValue('reg_end');
 
-    // Convert to timestamps - handle both DateTime objects and strings
+    // Convert all dates to Unix timestamps for database storage
+    // This ensures timezone-independent, reliable date storage and comparison
     $event_date_timestamp = $this->dateToTimestamp($event_date_value);
     $reg_start_timestamp = $this->dateToTimestamp($reg_start_value);
     $reg_end_timestamp = $this->dateToTimestamp($reg_end_value);
 
+    // Insert event into database with all dates as Unix timestamps
     $this->database->insert('event_config')
       ->fields([
-        'event_name' => $form_state->getValue('event_name'),
+        'event_name' => trim($form_state->getValue('event_name')),
         'category' => $form_state->getValue('category'),
-        'event_date' => $event_date_timestamp,
-        'reg_start' => $reg_start_timestamp,
-        'reg_end' => $reg_end_timestamp,
-        'created' => time(),
+        'event_date' => $event_date_timestamp,      // Unix timestamp
+        'reg_start' => $reg_start_timestamp,        // Unix timestamp
+        'reg_end' => $reg_end_timestamp,            // Unix timestamp
+        'created' => time(),                        // Unix timestamp (current time)
       ])
       ->execute();
 
@@ -155,18 +160,47 @@ class EventConfigForm extends FormBase {
   }
 
   /**
-   * Helper method to convert DateTime or string to timestamp.
+   * Helper method to convert DateTime or string to Unix timestamp.
+   *
+   * Handles multiple input types:
+   * - DrupalDateTime objects (from Drupal form element)
+   * - PHP DateTime objects
+   * - Numeric timestamps (passthrough)
+   * - String dates (parsed with strtotime as fallback)
+   *
+   * @param mixed $date_value
+   *   The date value to convert.
+   *
+   * @return int
+   *   Unix timestamp (seconds since Jan 1, 1970 UTC).
    */
   private function dateToTimestamp($date_value) {
-    if ($date_value instanceof \DateTime) {
-      return $date_value->getTimestamp();
+    // Handle DrupalDateTime objects (what the datetime form element returns)
+    if (class_exists('\Drupal\Core\Datetime\DrupalDateTime')) {
+      if ($date_value instanceof \Drupal\Core\Datetime\DrupalDateTime) {
+        return (int) $date_value->getTimestamp();
+      }
     }
+
+    // Handle standard PHP DateTime objects
+    if ($date_value instanceof \DateTime) {
+      return (int) $date_value->getTimestamp();
+    }
+
+    // If already a numeric timestamp, validate and return it
     if (is_numeric($date_value)) {
       return (int) $date_value;
     }
-    if (is_string($date_value)) {
-      return strtotime($date_value);
+
+    // Fallback: try to parse string dates
+    if (is_string($date_value) && !empty($date_value)) {
+      $timestamp = strtotime($date_value);
+      if ($timestamp !== FALSE) {
+        return $timestamp;
+      }
     }
+
+    // Default: return current timestamp if conversion fails
     return time();
   }
 
