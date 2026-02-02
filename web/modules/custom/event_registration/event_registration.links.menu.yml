@@ -1,0 +1,15 @@
+event_registration.admin_config:
+  title: "Event Registration Settings"
+  route_name: event_registration.admin_config
+  parent: system.admin_config_system
+  description: "Configure event registration settings"
+
+event_registration.event_config:
+  title: "Add Event Configuration"
+  route_name: event_registration.event_config
+  parent: system.admin
+
+event_registration.admin_listings:
+  title: "Event Registrations"
+  route_name: event_registration.admin_listings
+  parent: system.admin

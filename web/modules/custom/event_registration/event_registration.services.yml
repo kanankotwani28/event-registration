@@ -1,0 +1,20 @@
+services:
+  event_registration.mail_handler:
+    class: Drupal\event_registration\Mail\MailHandler
+    arguments:
+      - "@config.factory"
+      - "@plugin.manager.mail"
+
+  event_registration.event_service:
+    class: Drupal\event_registration\Service\EventService
+    arguments:
+      - "@database"
+
+  event_registration.registration_service:
+    class: Drupal\event_registration\Service\RegistrationService
+    arguments:
+      - "@database"
+      - "@event_registration.mail_handler"
+
+  event_registration.validation_service:
+    class: Drupal\event_registration\Service\ValidationService

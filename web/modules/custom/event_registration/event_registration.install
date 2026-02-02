@@ -1,0 +1,121 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the Event Registration module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function event_registration_schema() {
+
+  $schema['event_config'] = [
+    'description' => 'Stores event configuration',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key',
+      ],
+      'event_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Event name',
+      ],
+      'category' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'description' => 'Event category',
+      ],
+      'event_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Event date as timestamp',
+      ],
+      'reg_start' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Registration start date as timestamp',
+      ],
+      'reg_end' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Registration end date as timestamp',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Created timestamp',
+      ],
+    ],
+    'primary key' => ['id'],
+    'indexes' => [
+      'event_date' => ['event_date'],
+      'category' => ['category'],
+      'reg_dates' => ['reg_start', 'reg_end'],
+    ],
+  ];
+
+  $schema['event_registration'] = [
+    'description' => 'Stores event registrations',
+    'fields' => [
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key',
+      ],
+      'event_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Foreign key to event_config',
+      ],
+      'name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'User full name',
+      ],
+      'email' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'User email',
+      ],
+      'college' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'College name',
+      ],
+      'department' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Department',
+      ],
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Created timestamp',
+      ],
+    ],
+    'primary key' => ['id'],
+    'foreign keys' => [
+      'event_config' => [
+        'table' => 'event_config',
+        'columns' => ['event_id' => 'id'],
+      ],
+    ],
+    'indexes' => [
+      'event_id' => ['event_id'],
+      'email' => ['email'],
+      'created' => ['created'],
+    ],
+  return $schema;
+}
