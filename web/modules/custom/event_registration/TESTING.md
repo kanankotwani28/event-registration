@@ -148,7 +148,7 @@ Navigate to `/admin/config/event-registration/settings`:
 
 **Test Case 5c - Invalid College/Department:**
 
-- [ ] Enter special characters (excluding allowed: hyphen, parentheses, etc.)
+- [ ] Enter special characters such as "@#$%" in College/Department
 - [ ] Submit form
 - [ ] Verify error messages for invalid characters
 
@@ -253,14 +253,17 @@ $config['system.mail']['interface']['default'] = 'dblog_mail';
 
 **Test Various Inputs:**
 
-- Full Name: "Mary-Anne O'Brien" (should pass)
-- College: "St. Joseph's University" (should pass)
-- Department: "Computer Science & Engineering" (should pass)
+- Full Name: "Mary Anne Obrien" (should pass)
+- College: "St Josephs University" (should pass)
+- Department: "Computer Science Engineering" (should pass)
+- Full Name: "Mary-Anne O'Brien" (should fail)
+- College: "St. Joseph's University" (should fail)
+- Department: "Computer Science & Engineering" (should fail)
 
 **Expected Results:**
 
-- [ ] Names with hyphens and apostrophes accepted
-- [ ] College/Department with periods, ampersands, parentheses accepted
+- [ ] Only letters, numbers, and spaces accepted
+- [ ] Inputs with special characters are rejected with validation errors
 - [ ] Data stored correctly in database
 - [ ] Data displays correctly in admin panel
 

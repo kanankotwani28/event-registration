@@ -308,7 +308,7 @@
 
 - [x] Initial module creation commit
 - [x] Schema syntax error fix
-- [x] Duplicate check logic fix
+- [x] Duplicate check logic fix (Email + Event Date)
 - [x] Testing and installation guides commit
 - [x] Project summary commit
 - [x] Quick start guide commit
