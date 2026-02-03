@@ -111,6 +111,12 @@ After enabling the module, verify:
 3. Confirm it shows as "Enabled"
 4. Check for any warning messages
 
+**If updating an existing site**, run database updates:
+
+```bash
+drush updb
+```
+
 ### Step 5: Database Tables Creation
 
 The module automatically creates required tables when enabled:

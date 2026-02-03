@@ -74,10 +74,10 @@
 ### 3. Validation Rules ✅
 
 - [x] Email format validation (RFC compliant)
-- [x] Duplicate registration prevention (Email + Event ID)
+- [x] Duplicate registration prevention (Email + Event Date)
 - [x] Special character filtering for text fields
-- [x] Name validation (letters, spaces, hyphens, apostrophes)
-- [x] College/Department validation (alphanumeric + basic punctuation)
+- [x] Name validation (letters and spaces only)
+- [x] College/Department validation (letters, numbers, and spaces only)
 - [x] Required field validation
 - [x] User-friendly error messages
 
@@ -87,7 +87,7 @@
   - id, event_name, category, event_date, reg_start, reg_end, created
   - Primary key, indexes, foreign key constraints
 - [x] `event_registration` table created with:
-  - id, event_id, name, email, college, department, created
+  - id, event_id, event_name, category, event_date, name, email, college, department, created
   - Primary key, foreign key to event_config
   - Indexes for performance
 - [x] Database schema file (event_registration.sql) provided

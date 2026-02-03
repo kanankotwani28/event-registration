@@ -80,10 +80,10 @@ February 2, 2026
 ### ✅ Validation
 
 - Email format validation
-- Duplicate registration prevention (Email + Event ID combo)
+- Duplicate registration prevention (Email + Event Date)
 - Special character filtering for all text fields
-- Name validation (letters, spaces, hyphens, apostrophes only)
-- Text field validation (allows alphanumeric + basic punctuation)
+- Name validation (letters and spaces only)
+- Text field validation (letters, numbers, and spaces only)
 - User-friendly error messages
 - Server-side validation (no client-side dependencies)
 
@@ -94,7 +94,7 @@ February 2, 2026
   - Proper indexes on frequently queried columns
   - Foreign key constraints
 - `event_registration` table:
-  - id (PK), event_id (FK), name, email, college, department, created
+  - id (PK), event_id (FK), event_name, category, event_date, name, email, college, department, created
   - Foreign key to event_config
   - Proper indexes for performance
 
@@ -219,12 +219,15 @@ event_registration (User Registrations)
 
 - Auto-incremented primary key
 - Foreign key to event_config
+- Event name (255 char max)
+- Category (100 char max)
+- Event date (Unix timestamp)
 - Registrant name (255 char max)
 - Email address (255 char max)
 - College/institution (255 char max)
 - Department (255 char max)
 - Created timestamp (registration date)
-- Indexes on: event_id, email, created
+- Indexes on: event_id, email, event_date, created
 - Foreign key constraint with CASCADE delete
 
 ## Code Statistics
@@ -252,7 +255,7 @@ All work committed with meaningful messages:
 
 1. `feat: Add comprehensive Event Registration module for Drupal 10` - Initial module
 2. `fix: Correct syntax error in event_registration.install schema definition` - Schema fix
-3. `fix: Correct duplicate registration check logic to use event_id instead of event_date` - Validation fix
+3. `fix: Correct duplicate registration check logic to use event_date for uniqueness` - Validation fix
 4. `docs: Add comprehensive testing and installation guides` - Documentation
 
 ## Installation Instructions
@@ -279,7 +282,7 @@ drush en event_registration
 
 ✅ **Dynamic Form Fields** - Event date and name dropdowns update via AJAX based on category selection
 ✅ **Time-Based Access** - Registration form only appears during allowed registration periods
-✅ **Duplicate Prevention** - Prevents same user from registering twice for same event
+✅ **Duplicate Prevention** - Prevents same user from registering twice for the same event date
 ✅ **Email Notifications** - Confirms to users, notifies admins (configurable)
 ✅ **Admin Dashboard** - View, filter, and export all registrations
 ✅ **Comprehensive Validation** - Email, name, text field, duplicate, and required field validation

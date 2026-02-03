@@ -128,7 +128,7 @@ Navigate to `/admin/config/event-registration/settings`:
 
 **Expected Results:**
 
-- [ ] Same email + same event date: Error "You have already registered for this event."
+- [ ] Same email + same event date: Error "You have already registered for an event on this date."
 - [ ] Same email + different event date: Registration succeeds
 - [ ] Different email + same event date: Registration succeeds
 
@@ -193,7 +193,7 @@ Navigate to `/admin/config/event-registration/settings`:
 
 - [ ] CSV file downloads to your computer
 - [ ] File name format: "registrations\_[timestamp].csv"
-- [ ] CSV contains headers: ID, Event ID, Name, Email, College, Department, Registration Date
+- [ ] CSV contains headers: ID, Event ID, Name, Email, College, Department, Category, Event Date, Event Name, Registration Date
 - [ ] All registration data is included and properly formatted
 - [ ] Dates are formatted as YYYY-MM-DD HH:MM:SS
 
@@ -290,7 +290,7 @@ Verify:
 - [ ] All registrations have valid event_id
 - [ ] Email addresses are valid format
 - [ ] Timestamps are reasonable
-- [ ] No duplicate entries for same email+event_id
+- [ ] No duplicate entries for same email+event_date
 
 ## Performance Testing
 

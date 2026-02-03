@@ -142,3 +142,99 @@ function event_registration_schema() {
 
   return $schema;
 }
+
+/**
+ * Add event details and uniqueness constraint to registrations.
+ */
+function event_registration_update_10001() {
+  $schema = \Drupal::database()->schema();
+
+  if (!$schema->fieldExists('event_registration', 'event_name')) {
+    $schema->addField('event_registration', 'event_name', [
+      'type' => 'varchar',
+      'length' => 255,
+      'not null' => FALSE,
+      'description' => 'Event name at time of registration',
+    ]);
+  }
+
+  if (!$schema->fieldExists('event_registration', 'category')) {
+    $schema->addField('event_registration', 'category', [
+      'type' => 'varchar',
+      'length' => 100,
+      'not null' => FALSE,
+      'description' => 'Event category at time of registration',
+    ]);
+  }
+
+  if (!$schema->fieldExists('event_registration', 'event_date')) {
+    $schema->addField('event_registration', 'event_date', [
+      'type' => 'int',
+      'not null' => FALSE,
+      'description' => 'Event date as timestamp',
+    ]);
+  }
+
+  // Backfill new fields from event_config when possible.
+  $connection = \Drupal::database();
+  $records = $connection->select('event_registration', 'er')
+    ->fields('er', ['id', 'event_id'])
+    ->execute()
+    ->fetchAll();
+
+  foreach ($records as $record) {
+    $event = $connection->select('event_config', 'ec')
+      ->fields('ec', ['event_name', 'category', 'event_date'])
+      ->condition('id', $record->event_id)
+      ->execute()
+      ->fetchAssoc();
+
+    if ($event) {
+      $connection->update('event_registration')
+        ->fields([
+          'event_name' => $event['event_name'],
+          'category' => $event['category'],
+          'event_date' => $event['event_date'],
+        ])
+        ->condition('id', $record->id)
+        ->execute();
+    }
+    else {
+      $connection->update('event_registration')
+        ->fields([
+          'event_name' => '',
+          'category' => '',
+          'event_date' => 0,
+        ])
+        ->condition('id', $record->id)
+        ->execute();
+    }
+  }
+
+  // Enforce NOT NULL after backfill.
+  $schema->changeField('event_registration', 'event_name', 'event_name', [
+    'type' => 'varchar',
+    'length' => 255,
+    'not null' => TRUE,
+    'description' => 'Event name at time of registration',
+  ]);
+  $schema->changeField('event_registration', 'category', 'category', [
+    'type' => 'varchar',
+    'length' => 100,
+    'not null' => TRUE,
+    'description' => 'Event category at time of registration',
+  ]);
+  $schema->changeField('event_registration', 'event_date', 'event_date', [
+    'type' => 'int',
+    'not null' => TRUE,
+    'description' => 'Event date as timestamp',
+  ]);
+
+  if (!$schema->indexExists('event_registration', 'event_date')) {
+    $schema->addIndex('event_registration', 'event_date', ['event_date']);
+  }
+
+  if (!$schema->indexExists('event_registration', 'email_event_date')) {
+    $schema->addUniqueKey('event_registration', 'email_event_date', ['email', 'event_date']);
+  }
+}

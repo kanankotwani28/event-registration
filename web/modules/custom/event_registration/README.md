@@ -37,6 +37,7 @@ A comprehensive Drupal 10 custom module for managing event registrations with ad
    - Find "Event Registration" in the list
    - Check the checkbox and click "Install"
    - Or use Drush: `drush en event_registration`
+   - If updating an existing site, run database updates: `drush updb`
 
 3. **Configure Admin Email Settings**
    - Go to `/admin/config/event-registration/settings`
