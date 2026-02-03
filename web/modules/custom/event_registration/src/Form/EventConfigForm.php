@@ -124,8 +124,8 @@ class EventConfigForm extends FormBase {
 
     // Validate event name format
     $event_name = $form_state->getValue('event_name');
-    if (!preg_match('/^[a-zA-Z0-9\s\-&(),.\']+$/u', $event_name)) {
-      $form_state->setErrorByName('event_name', $this->t('Event name contains invalid characters.'));
+    if (!preg_match('/^[a-zA-Z0-9\s]+$/u', $event_name)) {
+      $form_state->setErrorByName('event_name', $this->t('Event name contains invalid characters. Only letters, numbers, and spaces are allowed.'));
     }
   }
 

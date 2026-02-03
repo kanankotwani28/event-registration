@@ -143,13 +143,13 @@ event_registration/
 
 ### ✅ Validation
 
-| Field        | Rules                                         |
-| ------------ | --------------------------------------------- |
-| Name         | Letters, spaces, hyphens, apostrophes only    |
-| Email        | Valid email format required                   |
-| College/Dept | Alphanumeric + spaces, hyphens, periods, etc. |
-| Duplicate    | Email + Event ID combo prevented              |
-| Required     | All fields must be filled                     |
+| Field        | Rules                               |
+| ------------ | ----------------------------------- |
+| Name         | Letters and spaces only             |
+| Email        | Valid email format required         |
+| College/Dept | Letters, numbers, and spaces only   |
+| Duplicate    | Email + Event Date combo prevented  |
+| Required     | All fields must be filled           |
 
 ## Database Tables
 
@@ -162,7 +162,7 @@ id | event_name | category | event_date | reg_start | reg_end | created
 ### event_registration (User Registrations)
 
 ```
-id | event_id | name | email | college | department | created
+id | event_id | event_name | category | event_date | name | email | college | department | created
 ```
 
 ## Permissions
@@ -194,10 +194,9 @@ Assign in `/admin/people/permissions`
 - Check `/admin/reports/dblog` for mail errors
 - Verify admin email is set in settings
 
-### "You have already registered for this event"
+### "You have already registered for an event on this date"
 
-- This is correct! Users cannot register twice for same event
-- They can register for different events with same email
+- This is correct! Users cannot register twice for the same event date
 
 ## Getting Help
 

@@ -75,6 +75,23 @@ function event_registration_schema() {
         'not null' => TRUE,
         'description' => 'Foreign key to event_config',
       ],
+      'event_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Event name at time of registration',
+      ],
+      'category' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'description' => 'Event category at time of registration',
+      ],
+      'event_date' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'description' => 'Event date as timestamp',
+      ],
       'name' => [
         'type' => 'varchar',
         'length' => 255,
@@ -112,9 +129,13 @@ function event_registration_schema() {
         'columns' => ['event_id' => 'id'],
       ],
     ],
+    'unique keys' => [
+      'email_event_date' => ['email', 'event_date'],
+    ],
     'indexes' => [
       'event_id' => ['event_id'],
       'email' => ['email'],
+      'event_date' => ['event_date'],
       'created' => ['created'],
     ],
   ];

@@ -58,7 +58,7 @@ class AdminListingsController extends ControllerBase {
    */
   public function exportCsv() {
     $registrations = $this->database->select('event_registration', 'er')
-      ->fields('er', ['id', 'event_id', 'name', 'email', 'college', 'department', 'created'])
+      ->fields('er', ['id', 'event_id', 'event_name', 'category', 'event_date', 'name', 'email', 'college', 'department', 'created'])
       ->execute()
       ->fetchAll();
 
@@ -71,7 +71,7 @@ class AdminListingsController extends ControllerBase {
       $handle = fopen('php://output', 'w');
 
       // CSV headers
-      fputcsv($handle, ['ID', 'Event ID', 'Name', 'Email', 'College', 'Department', 'Registration Date']);
+      fputcsv($handle, ['ID', 'Event ID', 'Name', 'Email', 'College', 'Department', 'Category', 'Event Date', 'Event Name', 'Registration Date']);
 
       // CSV data
       foreach ($registrations as $registration) {
@@ -82,6 +82,9 @@ class AdminListingsController extends ControllerBase {
           $registration->email,
           $registration->college,
           $registration->department,
+          $registration->category,
+          date('Y-m-d', $registration->event_date),
+          $registration->event_name,
           date('Y-m-d H:i:s', $registration->created),
         ]);
       }

@@ -20,15 +20,20 @@ CREATE TABLE IF NOT EXISTS `event_config` (
 CREATE TABLE IF NOT EXISTS `event_registration` (
   `id` INT(11) UNSIGNED NOT NULL AUTO_INCREMENT,
   `event_id` INT(11) UNSIGNED NOT NULL,
+  `event_name` VARCHAR(255) NOT NULL,
+  `category` VARCHAR(100) NOT NULL,
+  `event_date` INT(11) NOT NULL,
   `name` VARCHAR(255) NOT NULL,
   `email` VARCHAR(255) NOT NULL,
   `college` VARCHAR(255) NOT NULL,
   `department` VARCHAR(255) NOT NULL,
   `created` INT(11) NOT NULL,
   PRIMARY KEY (`id`),
+  UNIQUE KEY `email_event_date` (`email`, `event_date`),
   FOREIGN KEY (`event_id`) REFERENCES `event_config`(`id`) ON DELETE CASCADE,
   INDEX `event_id` (`event_id`),
   INDEX `email` (`email`),
+  INDEX `event_date` (`event_date`),
   INDEX `created` (`created`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 

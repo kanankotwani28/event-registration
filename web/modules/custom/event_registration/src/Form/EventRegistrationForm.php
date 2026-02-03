@@ -208,7 +208,7 @@ class EventRegistrationForm extends FormBase {
     // Validate name
     $name = $form_state->getValue('name');
     if (!$this->validationService->isValidName($name)) {
-      $form_state->setErrorByName('name', $this->t('Full name contains invalid characters. Only letters, spaces, and hyphens are allowed.'));
+      $form_state->setErrorByName('name', $this->t('Full name contains invalid characters. Only letters and spaces are allowed.'));
     }
 
     // Validate email
@@ -218,9 +218,9 @@ class EventRegistrationForm extends FormBase {
     }
 
     // Check for duplicate registration
-    $event_name_id = $form_state->getValue('event_name');
-    if ($event_name_id && $this->validationService->isDuplicateRegistration($email, $event_name_id)) {
-      $form_state->setErrorByName('email', $this->t('You have already registered for this event.'));
+    $event_date = $form_state->getValue('event_date');
+    if ($event_date && $this->validationService->isDuplicateRegistration($email, $event_date)) {
+      $form_state->setErrorByName('email', $this->t('You have already registered for an event on this date.'));
     }
 
     // Validate college and department
@@ -228,11 +228,11 @@ class EventRegistrationForm extends FormBase {
     $department = $form_state->getValue('department');
 
     if (!$this->validationService->isValidText($college)) {
-      $form_state->setErrorByName('college', $this->t('College name contains invalid characters.'));
+      $form_state->setErrorByName('college', $this->t('College name contains invalid characters. Only letters, numbers, and spaces are allowed.'));
     }
 
     if (!$this->validationService->isValidText($department)) {
-      $form_state->setErrorByName('department', $this->t('Department contains invalid characters.'));
+      $form_state->setErrorByName('department', $this->t('Department contains invalid characters. Only letters, numbers, and spaces are allowed.'));
     }
   }
 
@@ -244,7 +244,7 @@ class EventRegistrationForm extends FormBase {
 
     // Get event details
     $event = $this->database->select('event_config', 'ec')
-      ->fields('ec', ['id', 'event_name', 'category'])
+      ->fields('ec', ['id', 'event_name', 'category', 'event_date'])
       ->condition('id', $event_name_id)
       ->execute()
       ->fetchAssoc();
@@ -258,6 +258,9 @@ class EventRegistrationForm extends FormBase {
     $registration_id = $this->database->insert('event_registration')
       ->fields([
         'event_id' => $event['id'],
+        'event_name' => $event['event_name'],
+        'category' => $event['category'],
+        'event_date' => $event['event_date'],
         'name' => $form_state->getValue('name'),
         'email' => $form_state->getValue('email'),
         'college' => $form_state->getValue('college'),
@@ -271,7 +274,7 @@ class EventRegistrationForm extends FormBase {
       $form_state->getValue('email'),
       $form_state->getValue('name'),
       $event['event_name'],
-      $form_state->getValue('event_date'),
+      $event['event_date'],
       $event['category']
     );
 
@@ -280,4 +283,3 @@ class EventRegistrationForm extends FormBase {
   }
 
 }
-

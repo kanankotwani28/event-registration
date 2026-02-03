@@ -2,6 +2,7 @@
 
 namespace Drupal\event_registration\Form;
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -189,12 +190,12 @@ class AdminListingsForm extends FormBase {
     $rows = [];
     foreach ($registrations as $registration) {
       $rows[] = [
-        $registration->name,
-        $registration->email,
-        date('Y-m-d', $event_date),
-        $registration->college,
-        $registration->department,
-        date('Y-m-d H:i:s', $registration->created),
+        Html::escape($registration->name),
+        Html::escape($registration->email),
+        Html::escape(date('Y-m-d', $event_date)),
+        Html::escape($registration->college),
+        Html::escape($registration->department),
+        Html::escape(date('Y-m-d H:i:s', $registration->created)),
       ];
     }
 

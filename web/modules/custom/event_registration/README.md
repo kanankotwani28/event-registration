@@ -102,6 +102,9 @@ Stores user registrations for events.
 | ------------ | -------------- | --------------------------- |
 | `id`         | INT (serial)   | Primary key                 |
 | `event_id`   | INT (unsigned) | Foreign key to event_config |
+| `event_name` | VARCHAR(255)   | Event name                  |
+| `category`   | VARCHAR(100)   | Event category              |
+| `event_date` | INT            | Event date (Unix timestamp) |
 | `name`       | VARCHAR(255)   | User's full name            |
 | `email`      | VARCHAR(255)   | User's email address        |
 | `college`    | VARCHAR(255)   | User's college name         |
@@ -112,8 +115,10 @@ Stores user registrations for events.
 
 - `PRIMARY KEY (id)`
 - `FOREIGN KEY event_id -> event_config.id`
+- `UNIQUE KEY email_event_date (email, event_date)`
 - `INDEX event_id (event_id)`
 - `INDEX email (email)`
+- `INDEX event_date (event_date)`
 - `INDEX created (created)`
 
 ## Form Descriptions
@@ -134,10 +139,10 @@ The public registration form available to all users during the event registratio
 
 **Validation Logic:**
 
-- Name validation: Only letters, spaces, and hyphens allowed
+- Name validation: Only letters and spaces allowed
 - Email validation: Valid email format required
 - Duplicate prevention: Prevents registering same email for same event date
-- Text field validation: No special characters except basic punctuation
+- Text field validation: Only letters, numbers, and spaces allowed
 - All fields required
 
 ### Event Configuration Form (`/admin/event-registration/config`)
@@ -173,13 +178,13 @@ Configure module-wide settings using Drupal's Config API.
 
 - Email must be in valid format (RFC compliant)
 - Duplicate registrations prevented by Email + Event Date combination
-- Unique constraint prevents same user registering twice for same event
+- Unique constraint prevents the same user registering twice for the same event date
 
 ### Text Field Validation
 
-- **Name**: Only letters (a-z, A-Z), spaces, apostrophes, and hyphens allowed
-- **College**: Alphanumeric, spaces, hyphens, parentheses, periods, commas, ampersands
-- **Department**: Same as college name rules
+- **Name**: Letters and spaces only
+- **College**: Letters, numbers, and spaces only
+- **Department**: Letters, numbers, and spaces only
 - All fields have maximum length enforced at database level
 
 ### Form-Level Validation
@@ -337,6 +342,9 @@ The admin panel includes a CSV export feature for all registrations.
 - Email
 - College
 - Department
+- Category
+- Event Date
+- Event Name
 - Registration Date (YYYY-MM-DD HH:MM:SS format)
 
 **Access:** `/admin/event-registration/export-csv`
