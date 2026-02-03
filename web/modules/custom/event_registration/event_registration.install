@@ -231,10 +231,29 @@ function event_registration_update_10001() {
   ]);
 
   if (!$schema->indexExists('event_registration', 'event_date')) {
-    $schema->addIndex('event_registration', 'event_date', ['event_date']);
+    $schema->addIndex('event_registration', 'event_date', ['event_date'], [
+      'fields' => [
+        'event_date' => [
+          'type' => 'int',
+          'not null' => TRUE,
+        ],
+      ],
+    ]);
   }
 
   if (!$schema->indexExists('event_registration', 'email_event_date')) {
-    $schema->addUniqueKey('event_registration', 'email_event_date', ['email', 'event_date']);
+    $schema->addUniqueKey('event_registration', 'email_event_date', ['email', 'event_date'], [
+      'fields' => [
+        'email' => [
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+        ],
+        'event_date' => [
+          'type' => 'int',
+          'not null' => TRUE,
+        ],
+      ],
+    ]);
   }
 }
